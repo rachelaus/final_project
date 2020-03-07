@@ -1,0 +1,70 @@
+---
+title: "MS 4"
+author: "Rachel Auslander"
+date: "3/7/2020"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+library(haven)
+library(twitteR)
+library(rvest)
+```
+
+```{r}
+dec26 <- read_dta("ns20191226/ns20191226.dta")
+```
+
+```{r}
+nyt <- dec26 %>% 
+  select(news_sources_fox, news_sources_cnn, news_sources_npr, vote_2016) %>% filter(news_sources_fox == 1) %>% 
+  filter(vote_2016 == 1 | vote_2016 == 2)
+
+```
+
+```{r}
+viewbyage <- dec26 %>%
+  select(age, news_sources_msnbc, news_sources_cnn, news_sources_facebook, news_sources_fox, news_sources_network, 
+news_sources_localtv, news_sources_telemundo, news_sources_npr, news_sources_amtalk, news_sources_new_york_times, 
+news_sources_local_newspaper, news_sources_other_TEXT) %>% arrange(desc(age))
+```
+
+```{r}
+newssource <- dec26 %>%
+  select(age, news_sources_msnbc, news_sources_fox) %>%
+  arrange(age) 
+
+newssource$age_grouping <- cut(newssource$age, seq(17, 100, 6))
+```
+
+```{r}
+# Set API Keys
+api_key <- "YsikhPbAIpPBpzZLhDB9VxbD8"
+api_secret <- "SSvAYwWn5zrPjhufCsM9m8lwk9nhr6zj65cCZgAzUWI1HZSBZL"
+access_token <- "2870035294-3DyxiRECbiLsSuFNVN68Vf1OVweRO4WhGdbdZIa"
+access_token_secret <- "PVlchAIWVxsrqoip4qbbHDomOVQpGgowiINkCEg9xfLhf"
+setup_twitter_oauth(api_key, api_secret, access_token, access_token_secret)
+
+
+
+
+
+
+
+
+
+
+# https://www.r-bloggers.com/how-to-use-r-to-scrape-tweets-super-tuesday-2016/
+
+# Grab latest tweets
+tweets_sanders <- userTimeline('@BernieSanders', n=200)
+tweets_warren <-userTimeline('@ewarren', n = 200)
+tweets_biden <- userTimeline('@joebiden', n = 200)
+
+feed_sanders <- laply(tweets_sanders, function(t) t$getText())
+feed_warren <- laply(tweets_warren, function(t) t$getText())
+feed_biden <- laply(tweets_biden, function(t) t$getText())
+```
+
