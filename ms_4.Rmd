@@ -5,6 +5,10 @@ date: "3/7/2020"
 output: html_document
 ---
 
+My data will come from three sources: The Democracy Fund + UCLA Nationscape Voter Study Group data, Elizabeth Warren/Joe Biden/Bernie Sanders' Twitters, and headlines from MSNBC, NPR, NYT, CNN, and FOX. I plan to use the voter data from December - I am not sure if that is too small of a sample size (about 1500). I downloaded the voter data and scraped the tweets. I scraped a few headlines, but did not finish. I plan to use either Python code and an API or a different R package to scrape headlines. I will analyze headlines from different news sources, plot what news sources different demographics look at (and in what combinations), and will determine the top issues that voters care about versus the issues that candidates' tweets highlight/highlighted. I am not sure of the date range of headlines to scrape yet - possibly the last 3 months? 
+
+[My ms4 github repo](https://github.com/rachelaus/ms_4)
+
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 library(tidyverse)
@@ -13,25 +17,24 @@ library(twitteR)
 library(rvest)
 ```
 
-```{r}
+```{r reading in data, include = FALSE}
 dec26 <- read_dta("ns20191226/ns20191226.dta")
 ```
 
-```{r}
+```{r filtering data 1, include = FALSE}
 nyt <- dec26 %>% 
   select(news_sources_fox, news_sources_cnn, news_sources_npr, vote_2016) %>% filter(news_sources_fox == 1) %>% 
   filter(vote_2016 == 1 | vote_2016 == 2)
-
 ```
 
-```{r}
+```{r filtering data 2, include = FALSE}
 viewbyage <- dec26 %>%
   select(age, news_sources_msnbc, news_sources_cnn, news_sources_facebook, news_sources_fox, news_sources_network, 
 news_sources_localtv, news_sources_telemundo, news_sources_npr, news_sources_amtalk, news_sources_new_york_times, 
 news_sources_local_newspaper, news_sources_other_TEXT) %>% arrange(desc(age))
 ```
 
-```{r}
+```{r grouping data, include = FALSE}
 newssource <- dec26 %>%
   select(age, news_sources_msnbc, news_sources_fox) %>%
   arrange(age) 
@@ -39,32 +42,33 @@ newssource <- dec26 %>%
 newssource$age_grouping <- cut(newssource$age, seq(17, 100, 6))
 ```
 
-```{r}
+```{r scraping tweets, include = FALSE}
+# how do i save the tokens not in a code chunk?
+
 # Set API Keys
-api_key <- "YsikhPbAIpPBpzZLhDB9VxbD8"
-api_secret <- "SSvAYwWn5zrPjhufCsM9m8lwk9nhr6zj65cCZgAzUWI1HZSBZL"
-access_token <- "2870035294-3DyxiRECbiLsSuFNVN68Vf1OVweRO4WhGdbdZIa"
-access_token_secret <- "PVlchAIWVxsrqoip4qbbHDomOVQpGgowiINkCEg9xfLhf"
-setup_twitter_oauth(api_key, api_secret, access_token, access_token_secret)
-
-
-
-
-
-
-
-
-
+# api_key <- ""
+# api_secret <- ""
+# access_token <- ""
+# access_token_secret <- ""
+# setup_twitter_oauth(api_key, api_secret, access_token, access_token_secret)
 
 # https://www.r-bloggers.com/how-to-use-r-to-scrape-tweets-super-tuesday-2016/
 
-# Grab latest tweets
-tweets_sanders <- userTimeline('@BernieSanders', n=200)
-tweets_warren <-userTimeline('@ewarren', n = 200)
-tweets_biden <- userTimeline('@joebiden', n = 200)
+# grabbing tweets
+#tweets_sanders <- userTimeline('@BernieSanders', n=200)
+#tweets_warren <-userTimeline('@ewarren', n = 200)
+#tweets_biden <- userTimeline('@joebiden', n = 200)
 
-feed_sanders <- laply(tweets_sanders, function(t) t$getText())
-feed_warren <- laply(tweets_warren, function(t) t$getText())
-feed_biden <- laply(tweets_biden, function(t) t$getText())
+#feed_sanders <- laply(tweets_sanders, function(t) t$getText())
+#feed_warren <- laply(tweets_warren, function(t) t$getText())
+#feed_biden <- laply(tweets_biden, function(t) t$getText())
+```
+
+```{r scraping headlines, include = FALSE}
+
+headlines_sanders <- read_html('https://www.nytimes.com/search?dropmab=false&endDate=20200307&query=bernie%20sanders&sort=best&startDate=20190307&types=article')
+
+title_sanders <- headlines_sanders %>% html_nodes('h4.css-2fgx4k') %>% html_text()
+
 ```
 

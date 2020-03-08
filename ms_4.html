@@ -369,12 +369,8 @@ summary {
 </div>
 
 
-<pre class="r"><code>dec26 &lt;- read_dta(&quot;ns20191226/ns20191226.dta&quot;)</code></pre>
-<pre class="r"><code>nyt &lt;- dec26 %&gt;% 
-  select(news_sources_fox, news_sources_cnn, news_sources_npr, vote_2016) %&gt;% filter(news_sources_fox == 1) %&gt;% 
-  filter(vote_2016 == 1 | vote_2016 == 2)</code></pre>
-<pre class="r"><code>viewbyage &lt;- dec26 %&gt;%
-  select(age, news_sources_msnbc) %&gt;% arrange(age) %&gt;% ggplot(aes(news_sources_msnbc)) + geom_histogram()</code></pre>
+<p>My data will come from three sources: The Democracy Fund + UCLA Nationscape Voter Study Group data, Elizabeth Warren/Joe Biden/Bernie Sanders’ Twitters, and headlines from MSNBC, NPR, NYT, CNN, and FOX. I plan to use the voter data from December - I am not sure if that is too small of a sample size (about 1500). I downloaded the voter data and scraped the tweets. I scraped a few headlines, but did not finish. I plan to use either Python code and an API or a different R package to scrape headlines. I will analyze headlines from different news sources, plot what news sources different demographics look at (and in what combinations), and will determine the top issues that voters care about versus the issues that candidates’ tweets highlight/highlighted. I am not sure of the date range of headlines to scrape yet - possibly the last 3 months?</p>
+<p><a href="https://github.com/rachelaus/ms_4">My ms4 github repo</a></p>
 
 
 
