@@ -5,7 +5,7 @@ date: "3/23/2020"
 output: html_document
 ---
 
-[My ms5 github repo (which I need to rename as my project repo)](https://github.com/rachelaus/ms_4)
+[My ms5 github repo (which is now my final project repo)](https://github.com/rachelaus/final_project)
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
@@ -58,6 +58,7 @@ I know that I did not get a lot done the past 2 weeks, but I am going to get mor
 
 
 ```{r grouping data, include = FALSE}
+#this was my first try creating age ranges
 newssource <- dec26 %>%
   select(age, news_sources_msnbc, news_sources_fox) %>%
   arrange(age) 
