@@ -94,3 +94,23 @@ age_plot
 ```{r create graphic, include = FALSE}
 ggsave("news_and_candidates/age_plot.png", plot = age_plot)
 ```
+
+```{r}
+viewbyrace <- dec26 %>%
+  select(race_ethnicity, news_sources_msnbc, news_sources_cnn, news_sources_facebook, news_sources_fox, news_sources_network, 
+  news_sources_localtv, news_sources_telemundo, news_sources_npr, news_sources_amtalk, news_sources_new_york_times, news_sources_local_newspaper) %>%
+  group_by(race_ethnicity) %>%
+  summarize(msnbc = sum(news_sources_msnbc == 1), 
+            new_york_times = sum(news_sources_new_york_times == 1),
+            cnn = sum(news_sources_cnn == 1),
+            fb = sum(news_sources_facebook == 1),
+            fox = sum(news_sources_fox == 1),
+            network_tv = sum(news_sources_network == 1),
+            local_tv = sum(news_sources_localtv == 1), 
+            telemundo = sum(news_sources_telemundo == 1), 
+            npr = sum(news_sources_npr == 1), 
+            am_radio = sum(news_sources_amtalk == 1), 
+            local_news = sum(news_sources_local_newspaper == 1)
+  ) %>% pivot_longer(-race_ethnicity, names_to = "news_source", values_to = "num_news") 
+```
+
