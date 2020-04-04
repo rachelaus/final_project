@@ -29,13 +29,17 @@ nyt <- dec26 %>%
 
 ```{r ages of readers, echo = FALSE}
 viewbyage <- dec26 %>%
+  
+  # selected columns i needed to work with
+  
   select(age, news_sources_msnbc, news_sources_cnn, news_sources_facebook, news_sources_fox, news_sources_network, 
 news_sources_localtv, news_sources_telemundo, news_sources_npr, news_sources_amtalk, news_sources_new_york_times, 
 news_sources_local_newspaper) %>% arrange(age) %>% 
 #news_sources_other_TEXT
 
 # levels for new column age category
-#mutate and create a new variable rather than overriding
+#mutated and created a new variable rather than overriding a currently existing
+# column
 mutate(age_range =
 case_when(
   between(age, 18, 23) ~ "18-23",
@@ -47,6 +51,9 @@ case_when(
   select(-age) %>%
   arrange(age_range) %>%
   group_by(age_range) %>%
+  
+  # counted readers
+  
   summarize(msnbc = sum(news_sources_msnbc == 1), 
             new_york_times = sum(news_sources_new_york_times == 1),
             cnn = sum(news_sources_cnn == 1),
@@ -59,20 +66,26 @@ case_when(
             am_radio = sum(news_sources_amtalk == 1), 
             local_news = sum(news_sources_local_newspaper == 1)
   ) %>%
+  
+  # pivoted longer to prepare for graphing and get all news source names in
+  # a single column
+  
   pivot_longer(-age_range, names_to = "news_source", values_to = "num_news")  %>%
   group_by(age_range)
   #pivot_wider(names_from = age_range, values_from = num_news)
 
-
-
- # rename(network_TV = "Network TV", AM_Radio = "AM Radio", local_news = "Local News", local_tv = "Local TV", new_york_times = "New York Times")
+# created plot
 
 age_plot <- viewbyage %>%
   ggplot(aes(x = news_source, y = num_news, fill = age_range)) + 
   geom_col() + 
   labs(title = "Ages of readers of each news source", fill = "Age Range", x = "News Source", y = "Number of Readers/Viewers") + theme_classic() + theme(axis.text.x=element_text(angle=45,hjust=1)) +
+  
+  # renamed x axis labels in order, not the most efficient way but ok for now
+  
   scale_x_discrete(labels = c("AM Radio", "CNN", "Facebook", "Fox", "Local News", "Local TV", "MSNBC", "Network TV", "New York Times", "NPR", "Telemundo"))
   
+# printed plot
 
 age_plot
 
