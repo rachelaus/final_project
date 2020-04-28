@@ -1,11 +1,3 @@
-#
-# This is a Shiny web application. You can run the application by clicking
-# the 'Run App' button above.
-#
-# Find out more about building applications with Shiny here:
-#
-#    http://shiny.rstudio.com/
-#
 
 library(shiny)
 library(shinythemes)
@@ -45,16 +37,34 @@ ui <- fluidPage(
                           ),
                           
                           mainPanel(
-                            tableOutput("tweetComparison"))
+                            tableOutput("tweetComparison")
+                            )
+                          
         
       ) # end tabset panel
     ) # end tab panel
     
     
     
-    ) # end navbar
+    ), # end navbar
     
-    
+    tabPanel("Comparison of Candidate Coverage",
+             tabsetPanel(
+               
+               # The "Overview" panel looks at the relationship between ad spend 
+               # and polling
+               
+               tabPanel("Age",
+             
+       h3("Relationship between Ad Spending & Polling Results by Candidate"),       
+       mainPanel(plotOutput("viewbyage"))
+               ),
+       
+          tabPanel("Race",
+                   mainPanel(plotOutput("viewbyrace")))
+       
+        )
+    )
     
 ) # end fluid page
 )
@@ -65,34 +75,32 @@ server <- function(input, output) {
     output$tweetComparison <- renderTable({
       joined_data %>% filter(pub_date == input$bin) %>% select(headline.main)
     }, colnames = FALSE)
-   
+ 
+    output$age_plot <- renderPlot({
+      viewbyage %>%
+        ggplot(aes(x = news_source, y = num_news, fill = age_range)) + 
+        geom_col() + 
+        labs(title = "Ages of readers of each news source", fill = "Age Range", x = "News Source", y = "Number of Readers/Viewers") + theme_classic() + theme(axis.text.x=element_text(angle=45,hjust=1)) +
+        
+        # renamed x axis labels in order, not the most efficient way but ok for now
+        
+        scale_x_discrete(labels = c("AM Radio", "CNN", "Facebook", "Fox", "Local News", "Local TV", "MSNBC", "Network TV", "New York Times", "NPR", "Telemundo"))
+    })
+    
+    output$race_plot <- renderPlot({
+      viewbyrace %>%
+        ggplot(aes(x = news_source, y = num_news, fill = race_ethnicity)) + 
+        geom_col() + 
+        labs(title = "Races of readers of each news source", 
+             fill = "Race", 
+             x = "News Source", 
+             y = "Number of Readers/Viewers") + 
+        theme_classic() + 
+        theme(axis.text.x=element_text(angle=45,hjust=1)) + 
+        scale_x_discrete(labels = c("AM Radio", "CNN", "Facebook", "Fox", "Local News", "Local TV", "MSNBC", "Network TV", "New York Times", "NPR", "Telemundo"))
+    })
+    
 }
-
-output$age_plot <- renderPlot({
-  age_plot <- viewbyage %>%
-    ggplot(aes(x = news_source, y = num_news, fill = age_range)) + 
-    geom_col() + 
-    labs(title = "Ages of readers of each news source", fill = "Age Range", x = "News Source", y = "Number of Readers/Viewers") + theme_classic() + theme(axis.text.x=element_text(angle=45,hjust=1)) +
-    
-    # renamed x axis labels in order, not the most efficient way but ok for now
-    
-    scale_x_discrete(labels = c("AM Radio", "CNN", "Facebook", "Fox", "Local News", "Local TV", "MSNBC", "Network TV", "New York Times", "NPR", "Telemundo"))
-  })
-
-output$race_plot <- renderPlot({
-  
-  race_plot <- viewbyrace %>%
-    ggplot(aes(x = news_source, y = num_news, fill = race_ethnicity)) + 
-    geom_col() + 
-    labs(title = "Races of readers of each news source", 
-         fill = "Race", 
-         x = "News Source", 
-         y = "Number of Readers/Viewers") + 
-    theme_classic() + 
-    theme(axis.text.x=element_text(angle=45,hjust=1)) + 
-    scale_x_discrete(labels = c("AM Radio", "CNN", "Facebook", "Fox", "Local News", "Local TV", "MSNBC", "Network TV", "New York Times", "NPR", "Telemundo"))
-  
-})
 
 
 
