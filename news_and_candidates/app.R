@@ -56,37 +56,35 @@ ui <- fluidPage(
                   )
               ) # end new york times
     ) # end tabset panel
-  ), # end tab panel
+  ), # end comparison tab panel
     
     
     # investigating who reads different sources
     
-    tabPanel("Readership",
+  tabPanel("Readership",
              
-          tabsetPanel(
+        tabsetPanel(
              
-               tabPanel("Age",
+              tabPanel("Age",
              
-       h3("News sources popular among different age demographics"),       
-       mainPanel(plotOutput("viewbyage"))
-               ), 
-       sidebarPanel(
+                 mainPanel(h3("News sources popular among different age demographics"),
+                   plotOutput("age_plot")),
+            
+                 sidebarPanel(
                  checkboxGroupInput("news_checkbox","Select News Sources",
                                     choices = news_sources_vector,
-                                    selected = news_sources_vector)),
+                                    selected = news_sources_vector))),
           
-          tabPanel("Race",
-                   h3("News sources popular among different racial demographics"),       
-                   mainPanel(
-                   plotOutput("viewbyrace"))
-                   
-                   )
-                   )
+               tabPanel("Race",
+                  
+                  mainPanel(h3("News sources popular among different racial demographics"),
+                    plotOutput("race_plot")))
+              
+         ) # end tabset panel
     
-    ))
-    
-
-)
+    ) # end readership tab panel
+  
+)) # end fluid page and navbar page
 
 # Define server logic required to draw a histogram
 server <- function(input, output) {
@@ -129,4 +127,4 @@ server <- function(input, output) {
 
 
 # Run the application 
-shinyApp(ui = ui, server = server)
+shinyApp(ui, server)
