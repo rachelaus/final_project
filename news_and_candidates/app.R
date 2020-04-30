@@ -82,7 +82,21 @@ ui <- fluidPage(
               
          ) # end tabset panel
     
-    ) # end readership tab panel
+    ), # end readership tab panel
+  
+  tabPanel("Model",
+           
+           
+  ),
+  
+  tabPanel("About",
+           
+       mainPanel(
+             p("the about page")
+             #embed_url(""),
+             #includeHTML("about.Rhtml")
+           )  
+    ) # end about tab panel
   
 )) # end fluid page and navbar page
 
