@@ -44,7 +44,7 @@ ui <- fluidPage(
                         
           # New York Times headlines
           
-          tabPanel("New York Times",
+          tabPanel("Compare New York Times Headlines",
 
               # Sidebar with a slider input for the number of bins
                 sidebarPanel(
@@ -52,7 +52,7 @@ ui <- fluidPage(
                              "Date of article:",
                               min = as.Date("2020-01-01","%Y-%m-%d"),
                               max = as.Date("2020-04-17","%Y-%m-%d"),
-                              value=as.Date("2020-02-16"),
+                              value=as.Date("2020-02-25"),
                               timeFormat="%Y-%m-%d")
                 ),
                 
@@ -61,7 +61,15 @@ ui <- fluidPage(
                 mainPanel(
                   tableOutput("headlineComparison")
                   )
-              ) # end new york times
+              ), # end new york times tab
+          tabPanel("Graph of New York Times Headlines",
+                   
+                   mainPanel(
+                     plotOutput("nyt_plot")
+                   )
+                   
+                   
+            ) # end line graph tab
     ) # end tabset panel
   ), # end comparison tab panel
     
@@ -92,7 +100,7 @@ ui <- fluidPage(
                tabPanel("Race",
                   
                   mainPanel(h3(""),
-                    plotOutput("race_plot"), p("hello")),
+                    plotOutput("race_plot"), p("Percent of readers displayed is out of each race category rather than total readers in dataset - no percentage is greater than 20")),
                   
                   sidebarPanel(
                     checkboxGroupInput("news_race_checkbox","Select News Sources", selected = unique(viewbyrace$news_source),
@@ -112,9 +120,7 @@ ui <- fluidPage(
   tabPanel("About",
            
        mainPanel(
-             p("the about page")
-             #embed_url(""),
-             #includeHTML("about.Rhtml")
+             includeHTML("about.Rhtml")
            )  
     ) # end about tab panel
   
@@ -178,6 +184,17 @@ server <- function(input, output) {
   })
   
   
+  output$nyt_plot <- renderPlot ({
+    sort_by_date %>% 
+      ggplot(aes(x = pub_date, y = articles_per_date, color = candidate)) + 
+      geom_line() + 
+      theme_classic() + 
+      labs(title = "Number of New York Times Headlines about Joe Biden and Bernie Sanders", 
+           color = "Candidate", 
+           x = "Publication Date", 
+           y = "Number of Headlines") +
+      theme_classic() 
+  })
   
   
 }
