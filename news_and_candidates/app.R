@@ -12,6 +12,7 @@ library(ggthemes)
 joined_data <- read_rds("joined_data.rds")
 viewbyage <- read_rds("viewbyage.rds")
 viewbyrace <- read_rds("viewbyrace.rds")
+sort_by_date <- read_rds("sort_by_date.rds")
 
 # created a vector of news sources to be used in the checkbox picker
 news_sources_vector  <- c("AM Radio", "CNN", "Facebook", "Fox", "Local News",
