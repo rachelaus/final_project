@@ -14,9 +14,16 @@ viewbyage <- read_rds("viewbyage.rds")
 viewbyrace <- read_rds("viewbyrace.rds")
 
 # created a vector of news sources to be used in the checkbox picker
+news_sources_vector  <- c("AM Radio", "CNN", "Facebook", "Fox", "Local News",
+                          "Local TV", "MSNBC", "Network TV", "New York Times", 
+                          "NPR", "Telemundo")
 
-news_sources_vector = c("AM Radio", "CNN", "Facebook", "Fox", "Local News", "Local TV", 
-           "MSNBC", "Network TV", "New York Times", "NPR", "Telemundo")
+#news_sources_values <- c(am_radio, cnn, fb, fox, local_news, local_tv, msnbc, 
+   #                      network_tv, new_york_times, npr, telemundo)
+
+
+#news_sources_vector = c("MSNBC", "New York Times", "CNN", "Facebook", "Fox", "Network TV", 
+         #  "Local TV", "Telemundo", "NPR", "AM Radio", "Local News")
 
 # UI of Shiny app
 
@@ -70,15 +77,28 @@ ui <- fluidPage(
                  mainPanel(h3("News sources popular among different age demographics"),
                    plotOutput("age_plot")),
             
+                 
+                 # i changed choices to be choice names and choice values. i needed to filter through the values and display the vector of proper names associated with each value
+                 # my data in my ggplot was not displaying because i was comparing values to names instead of values to values disguised as names
+                 
+                 
+                 
+                 # i NEED to make sure the names are corresponding correctly to the values and the legend names too
+                 
                  sidebarPanel(
-                 checkboxGroupInput("news_checkbox","Select News Sources",
-                                    choices = news_sources_vector,
-                                    selected = news_sources_vector))),
-          
+                 checkboxGroupInput("news_checkbox","Select News Sources", selected = unique(viewbyage$news_source),
+                                    choiceValues = unique(viewbyage$news_source), choiceNames = news_sources_vector))),
+            #  unique(viewbyage$news_source)
                tabPanel("Race",
                   
-                  mainPanel(h3("News sources popular among different racial demographics"),
-                    plotOutput("race_plot")))
+                  mainPanel(h3(""),
+                    plotOutput("race_plot"), p("hello")),
+                  
+                  sidebarPanel(
+                    checkboxGroupInput("news_race_checkbox","Select News Sources", selected = unique(viewbyrace$news_source),
+                                       choiceValues = unique(viewbyrace$news_source), choiceNames = news_sources_vector))
+                  
+                  ) # end race tab
               
          ) # end tabset panel
     
@@ -116,26 +136,50 @@ server <- function(input, output) {
       labs(title = "Ages of readers of each news source", 
            fill = "News Source", 
            x = "Age Range", y = "Percent of Readers/Viewers") + 
-      theme_classic() + theme(axis.text.x=element_text(angle=45,hjust=1))
+      theme_classic() + theme(axis.text.x=element_text(angle=45,hjust=1)) #+ 
+      #scale_fill_discrete(labels=c("AM Radio", "CNN", "Facebook", "Fox", 
+                                 #  "Local News", "Local TV", "MSNBC", 
+                                 #  "Network TV", "New York Times", 
+                                 #  "NPR", "Telemundo"))
+      
   })
   
   output$race_plot <- renderPlot({
     viewbyrace %>%
-      ggplot(aes(x = news_source, y = num_news, fill = race_ethnicity)) + 
-      geom_col() + 
-      labs(title = "Races of readers of each news source", 
+      filter(news_source %in% input$news_race_checkbox) %>%
+      ggplot(aes(x = news_source, y = percent, fill = race_ethnicity)) + 
+      geom_col(position = "dodge") + 
+      labs(title = "Popularity of News Source by Race", 
            fill = "Race", 
            x = "News Source", 
-           y = "Number of Readers/Viewers") + 
+           y = "Percent of Readers/Viewers") + 
       theme_classic() + 
-      theme(axis.text.x=element_text(angle=45,hjust=1)) + 
-      scale_x_discrete(labels = c("AM Radio", "CNN", "Facebook", "Fox", 
-                                  "Local News", "Local TV", "MSNBC", 
-                                  "Network TV", "New York Times", "NPR", 
-                                  "Telemundo"))
+      theme(axis.text.x=element_text(angle=45,hjust=1))
+    
   })
     
     
+  output$party_plot <- renderPlot ({
+    viewbyparty %>%
+      filter(news_source %in% input$news_checkbox) %>%
+      mutate(news_source =
+               case_when(
+                 news_sources_fox == 1 & news_sources_cnn == 2 ~ "Fox",
+                 news_sources_fox == 2 & news_sources_cnn == 1 ~ "CNN",
+                 news_sources_fox == 1 & news_sources_cnn == 1 ~ "Both",
+                 news_sources_fox == 2 & news_sources_cnn == 2 ~ "Neither"
+               )) 
+    
+    
+    party_source_plot <- viewbyparty %>%
+      ggplot(aes(x = news_source, fill = party)) + geom_histogram(stat = "count")
+    
+    party_source_plot
+  })
+  
+  
+  
+  
 }
 
 
